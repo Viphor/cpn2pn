@@ -1,79 +1,54 @@
-def get_namespace(element):
+from collections import OrderedDict
+from xml.etree.ElementTree import Element
+
+
+def get_namespace(element: Element) -> str:
     if element.tag[0] == '{':
         return element.tag[:element.tag.index('}') + 1]
     return ''
 
 
-def get_tag(element):
+def get_tag(element: Element) -> str:
     if element.tag[0] == '{':
         return element.tag.split('}')[1]
     return element.tag
 
 
-def append_ns(dct, ns):
+def append_ns(dct: dict, ns: str) -> dict:
     if not ns:
         return dct
     return {ns + key: value for key, value in dct.items()}
 
 
-class Sort:
-    def __init__(self, element):
-        self.type = get_tag(element)
-        self.__ns = get_namespace(element)
-
-        {
-            'finiteenumeration': self.__finite_enumeration,
-            'cyclicenumeration': self.__finite_enumeration,
-            'dot': self.__dot,
-        }[self.type](element)
-
-    def __finite_enumeration(self, element):
-        self.constants = {const.attrib['id']: const.attrib['name'] for const in element}
-
-    def __dot(self, element):  # the element parameter is for consistency.
-        self.constants = {'dotconstant': 'dot'}
+def next_key(dct: OrderedDict, key):
+    l = list(dct.keys())
+    i = l.index(key)
+    if i < len(l) - 1:
+        return l[i + 1]
+    else:
+        return l[0]
 
 
-class Declaration:
-
-    def __init__(self, element, types=None):
-        self.id = element.attrib['id']
-        self.name = element.attrib['name']
-        self.type = get_tag(element)
-        if not types:
-            self.sort = Sort(element[0])
-        else:
-            self.sort = element[0].attrib['declaration']
+def prev_key(dct: OrderedDict, key):
+    l = list(dct.keys())
+    i = l.index(key)
+    if i > 0:
+        return l[i - 1]
+    else:
+        return l[len(l) - 1]
 
 
-class Place:
-
-    def __init__(self, element):
-        ns = get_namespace(element)
-        self.id = element.attrib['id']
-        self.name = element.find('./{0}name/{0}text'.format(ns)).text
-        self.type = element.find('./{0}type/{0}structure/*'.format(ns)).attrib['declaration']
-
-        initial_marking = element.find('./{0}hlinitialmarking/{0}structure'.format(ns))
-        if initial_marking:
-            self.__set_initial_marking(initial_marking)
-
-    def __set_initial_marking(self, element):
-        pass
+def key_order(dct: OrderedDict, left, right) -> int:
+    i = list(dct.keys()).index(left)
+    j = list(dct.keys()).index(right)
+    return i - j
 
 
-class Transition:
-
-    def __init__(self, element):
-        ns = get_namespace(element)
-        self.id = element.attrib['id']
-        self.name = element.find('./{0}name/{0}text'.format(ns)).text
-
-
-class Arc:
-
-    def __init__(self, element):
-        ns = get_namespace(element)
-        self.id = element.attrib['id']
-        self.source = element.attrib['source']
-        self.target = element.attrib['target']
+def generate_permutations(*args):
+    if len(args) > 1:
+        permutations = generate_permutations(*args[1:])
+        return [list(y).append(x) for x in list(args[0]) for y in permutations]
+    elif len(args) == 1:
+        return list(args[0])
+    else:
+        return []
