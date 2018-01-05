@@ -1,8 +1,9 @@
 import unittest
+from timeit import timeit
 
 from multiset import Multiset
 
-from CPNParser.model import CPNModel
+from CPNParser.CPNModel import CPNModel
 
 
 class TestCPNModelMethods(unittest.TestCase):
@@ -104,6 +105,10 @@ class TestCPNModelMethods(unittest.TestCase):
             ('Direction1', 'Position1', 'Position0'): 1,
             ('Direction1', 'Position1', 'Position1'): 1
         }))
+
+    def test_speed(self):
+        print(timeit("CPNModel('../../data/mcc2016-models/DatabaseWithMutex-COL-40/model.pnml').to_pt_net()",
+                     "from CPNParser.CPNModel import CPNModel", number=1))
 
 
 if __name__ == '__main__':

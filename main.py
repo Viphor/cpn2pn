@@ -1,9 +1,13 @@
+from ast import literal_eval
+
 from collections import OrderedDict
 from itertools import permutations, product
 
 from multiset import Multiset
 
-from CPNParser.model import CPNModel
+import xml.etree.ElementTree as ET
+
+from CPNParser.CPNModel import CPNModel
 from CPNParser.helpers import next_key, prev_key, generate_permutations
 
 model = CPNModel('../../data/DotAndBoxes/COLORED/DotAndBoxes2.pnml')
@@ -35,11 +39,11 @@ variable_types = [list(model.types[model.variables[item].type].constants.keys())
 
 print(variable_types)
 
-bindings = list(product(*variable_types))
+bindings = model.transitions['Lose2'].bindings
 
 for b in bindings:
     print(b)
-    evaluation = expression.evaluate(model, dict(zip(variables, b)))
+    evaluation = expression.evaluate(model, b)
     print(evaluation)
 
 
@@ -56,3 +60,21 @@ print(arc_variables)
 for a in arc_bindings:
     print(a)
     print(arc_expression.evaluate(model, dict(zip(arc_variables, a))))
+
+
+transition_id = '{0};{1}'.format('Lose2', model.transitions['Lose2'].bindings[0])
+print()
+print(literal_eval(transition_id.split(';')[1]))
+
+# ptmodel = model.to_pt_net()
+
+# print(ptmodel.transitions)
+# print(ET.tostring(ptmodel.to_pnml().getroot(), short_empty_elements=False))
+
+# ptmodel.to_pnml().write('../../data/DotAndBoxes/TEST/DotAndBoxes2.pnml', short_empty_elements=False)
+
+trouble_model = CPNModel("../../data/mcc2016-models/CSRepetitions-COL-02/model.pnml")
+
+trouble_pt = trouble_model.to_pt_net()
+
+print(ET.tostring(trouble_pt.to_pnml().getroot(), short_empty_elements=False))

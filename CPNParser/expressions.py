@@ -16,7 +16,7 @@ def get_constituents(element: Element, typing, *args, **kwargs):
     return left, right
 
 
-def ensure_color_types(model, left: str, right: str):
+def ensure_color_types(model, left, right):
     left_color_type = model.find_color_type(left)
     right_color_type = model.find_color_type(right)
 
@@ -103,9 +103,13 @@ def __eval_number_of(element: Element, *args, **kwargs) -> Multiset:
     if get_tag(element) != 'numberof':
         raise Exception('Element is not a number of operator!')
     num = eval_term(element[0], *args, **kwargs)
-    if not isinstance(num, int):
-        raise Exception('The first child of the number of operator must evaluate to an integer!')
-    color = eval_term(element[1], *args, **kwargs)
+    if not isinstance(num, (int, list, str, tuple)):
+        raise Exception('The first child must either be a number, or a color!')
+    if isinstance(num, int):
+        color = eval_term(element[1], *args, **kwargs)
+    else:
+        color = num
+        num = 1
     if not isinstance(color, (str, list, tuple)):
         raise Exception('The second child of the number of operator must evaluate to a color')
 
@@ -132,7 +136,7 @@ def __eval_all(element: Element, *args, **kwargs) -> list:
     if get_tag(element) != 'all':
         raise Exception('Element is not an all operator!')
     model = kwargs['model']
-    color_type = model.types[eval_term(element[0], model=model, *args, **kwargs)]
+    color_type = model.types[eval_term(element[0], *args, **kwargs)]
     if not color_type:
         raise LookupError('Color type not found!')
 
@@ -312,6 +316,9 @@ class Expression:
                 self.variables.append(v.attrib['refvariable'])
 
     def evaluate(self, model, binding: dict = {}):
-        if set(self.variables) != set(binding.keys()):
+        if set(binding.keys()) < (set(self.variables)):
             raise Exception('All variables must be bound in order to evaluate expression!')
-        return eval_term(self.expression, binding=binding, model=model)
+        res = eval_term(self.expression, binding=binding, model=model)
+        if self.type in ['initial_marking', 'arc_expression'] and isinstance(res, (str, list)):
+            res = Multiset(list(res))
+        return res
