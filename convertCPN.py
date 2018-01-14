@@ -98,6 +98,7 @@ commands = {
 
 try:
     for arg in sys.argv[1:]:
+        print(arg)
         if read_output:
             if arg in commands:
                 raise Exception("A file name must follow the argument -o or --output. Try -h for more help.")
