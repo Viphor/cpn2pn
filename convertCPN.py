@@ -106,4 +106,5 @@ try:
             continue
         commands[arg]()
 except KeyError:
+    print(sys.argv)
     write_net(CPNModel(sys.argv[len(sys.argv) - 1]).to_pt_net(), output_file)
