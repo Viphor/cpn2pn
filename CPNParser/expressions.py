@@ -68,7 +68,7 @@ def __eval_successor(element: Element, model, *args, **kwargs) -> str:
     color = eval_term(element[0], model=model, *args, **kwargs)
     color_type = model.find_color_type(color)
     if color_type.pnml_type != 'cyclicenumeration':
-        raise Exception('Only finite enumerations has successors')
+        raise Exception('Only cyclic enumerations has successors')
 
     return next_key(color_type.constants, color)
 
@@ -82,7 +82,7 @@ def __eval_predecessor(element: Element, model, *args, **kwargs) -> str:
     color = eval_term(element[0], model=model, *args, **kwargs)
     color_type = model.find_color_type(color)
     if color_type.pnml_type != 'cyclicenumeration':
-        raise Exception('Only finite enumerations has predecessors')
+        raise Exception('Only cyclic enumerations has predecessors')
 
     return prev_key(color_type.constants, color)
 
