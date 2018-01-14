@@ -28,36 +28,35 @@ def print_help():
     print("  -v, --verbose             Prints additional information such as size of input and output.")
 
 
-def verbose():
-    if len(sys.argv) < 4:
-        print_to_few_args()
-
+def run():
     cpn = CPNModel(sys.argv[len(sys.argv) - 1])
 
-    cpn_places = len(cpn.places.keys())
-    cpn_transitions = len(cpn.transitions.keys())
-    cpn_size = cpn_places + cpn_transitions
+    if is_verbose:
+        cpn_places = len(cpn.places.keys())
+        cpn_transitions = len(cpn.transitions.keys())
+        cpn_size = cpn_places + cpn_transitions
 
-    print("Net id: ", cpn.name)
-    print("Number of places in CPN: ", cpn_places)
-    print("Number of transitions in CPN: ", cpn_transitions)
-    print("Size in total (places+transitions): ", cpn_size)
-    print("")
+        print("Net id: ", cpn.name)
+        print("Number of places in CPN: ", cpn_places)
+        print("Number of transitions in CPN: ", cpn_transitions)
+        print("Size in total (places+transitions): ", cpn_size)
+        print("")
 
-    start_time = time.time()
+        start_time = time.time()
     pt = cpn.to_pt_net()
-    unfold_time = time.time() - start_time
+    if is_verbose:
+        unfold_time = time.time() - start_time
 
-    pt_places = len(pt.places.keys())
-    pt_transitions = len(pt.transitions.keys())
-    pt_size = pt_places + pt_transitions
+        pt_places = len(pt.places.keys())
+        pt_transitions = len(pt.transitions.keys())
+        pt_size = pt_places + pt_transitions
 
-    print("Number of places in PT: ", pt_places)
-    print("Number of transitions in PT: ", pt_transitions)
-    print("Size in total (places+transitions): ", pt_size)
-    print("")
-    print("Size ratio: ", pt_size / cpn_size)
-    print("Unfolding time: {0} seconds".format(unfold_time))
+        print("Number of places in PT: ", pt_places)
+        print("Number of transitions in PT: ", pt_transitions)
+        print("Size in total (places+transitions): ", pt_size)
+        print("")
+        print("Size ratio: ", pt_size / cpn_size)
+        print("Unfolding time: {0} seconds".format(unfold_time))
 
     global output_file
     write_net(pt, output_file)
@@ -68,6 +67,11 @@ def write_net(model: PTModel, output: str=None):
         model.to_pnml().write(output, short_empty_elements=False)
     else:
         print(ET.tostring(model.to_pnml().getroot(), short_empty_elements=False).decode('utf-8'))
+
+
+def verbose():
+    global is_verbose
+    is_verbose = True
 
 
 def read_output_file(file=None):
@@ -86,6 +90,7 @@ if len(sys.argv) < 2:
 
 output_file = None
 read_output = False
+is_verbose = False
 
 commands = {
     '-v': verbose,
@@ -98,7 +103,6 @@ commands = {
 
 try:
     for arg in sys.argv[1:]:
-        print(arg)
         if read_output:
             if arg in commands:
                 raise Exception("A file name must follow the argument -o or --output. Try -h for more help.")
@@ -106,5 +110,4 @@ try:
             continue
         commands[arg]()
 except KeyError:
-    print(sys.argv)
-    write_net(CPNModel(sys.argv[len(sys.argv) - 1]).to_pt_net(), output_file)
+    run()
