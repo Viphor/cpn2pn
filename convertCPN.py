@@ -18,7 +18,7 @@ def print_help():
     print("and prints the P/T net to stdout in PNML format.")
     print("")
     print("Usage:")
-    print("  {0} [options] <source>")
+    print("  {0} [options] <source>".format(sys.argv[0]))
     print("")
     print("  Where <source> is the file to convert.")
     print("")
