@@ -32,3 +32,7 @@ Options:
   -o, --output-file <file>  Prints the PNML to the specified file instead of stdio.                                                               
   -v, --verbose             Prints additional information such as size of input and output.
 ```
+
+## TODO
+- Rewrite tests to not require not included files
+- Make the single- and multi-threaded sections as functions (found at comments "# TODO:1")
