@@ -21,10 +21,11 @@ def print_help():
     print("  {0} [options] <source>".format(sys.argv[0]))
     print("")
     print("  Where <source> is the file to convert.")
+    print("  Note: stderr is used for outputting inconsistencies with the PNML standand.")
     print("")
     print("Options:")
     print("  -h, --help                Prints this text.")
-    print("  -o, --output-file <file>  Prints the PNML to the specified file instead of stdio.")
+    print("  -o, --output-file <file>  Prints the PNML to the specified file instead of stdout.")
     print("  -v, --verbose             Prints additional information such as size of input and output.")
 
 

@@ -232,6 +232,9 @@ class CPNModel:
         self.types = {}
         self.variables = {}
 
+        if not decls:
+            raise Exception('Could not find any declarations in /pnml/net/declaration/structure/declarations')
+
         for decl in decls:
             {
                 'namedsort': lambda: self.types.update({decl.attrib['id']: ColorType(decl, self)}),
@@ -243,6 +246,9 @@ class CPNModel:
 
     def __parse_net(self, part, clazz):
         parts = self.xml_net.findall('./{0}page/{0}{1}'.format(self.__ns, part))
+
+        if not parts:
+            raise Exception('Could not find any {0}s in /pnml/net/page/{0}'.format(part))
 
         setattr(self, part + 's', {})
 

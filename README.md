@@ -26,10 +26,11 @@ Usage:
   convertCPN.py [options] <source>
 
   Where <source> is the file to convert.
+  Note: stderr is used for outputting inconsistencies with the PNML standand.
 
 Options:                                                                                                                                          
   -h, --help                Prints this text.                                                                                                     
-  -o, --output-file <file>  Prints the PNML to the specified file instead of stdio.                                                               
+  -o, --output-file <file>  Prints the PNML to the specified file instead of stdout.                                                               
   -v, --verbose             Prints additional information such as size of input and output.
 ```
 

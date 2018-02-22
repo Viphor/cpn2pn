@@ -1,3 +1,5 @@
+import sys
+
 from itertools import product
 from xml.etree.ElementTree import Element
 
@@ -68,7 +70,7 @@ def __eval_successor(element: Element, model, *args, **kwargs) -> str:
     color = eval_term(element[0], model=model, *args, **kwargs)
     color_type = model.find_color_type(color)
     if color_type.pnml_type != 'cyclicenumeration':
-        raise Exception('Only cyclic enumerations has successors')
+        sys.stderr.write('Using successor on a {0} color. Only cyclic enumerations has successors'.format(color_type.pnml_type))
 
     return next_key(color_type.constants, color)
 
@@ -82,7 +84,7 @@ def __eval_predecessor(element: Element, model, *args, **kwargs) -> str:
     color = eval_term(element[0], model=model, *args, **kwargs)
     color_type = model.find_color_type(color)
     if color_type.pnml_type != 'cyclicenumeration':
-        raise Exception('Only cyclic enumerations has predecessors')
+        sys.stderr.write('Using predecessor on a {0} color. Only cyclic enumerations has predecessors.'.format(color_type.pnml_type))
 
     return prev_key(color_type.constants, color)
 
