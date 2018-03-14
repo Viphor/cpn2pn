@@ -13,6 +13,10 @@ This project is written as a module called CPNParser, which contains the models
 used for reading Coloured Petri Nets in PNML format, the code for unfolding the net,
 and the model for Petri Nets, which can be converted to PNML format.
 
+The input file must follow the PNML standard for symmetric nets in order to be parsed.
+More information on the standard can be found at [pnml.org](http://www.pnml.org/) and 
+in this [paper](http://www.pnml.org/papers/pnnl76.pdf).
+
 ### Command line
 In order to access this functionality from the command line, the tool convertCPN.py
 was written. To get help, use:
