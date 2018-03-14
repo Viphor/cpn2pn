@@ -8,6 +8,10 @@ from multiset import Multiset
 from CPNParser.helpers import get_namespace, next_key, prev_key, key_order, get_tag
 
 
+didReportSucc = False
+didReportPred = False
+
+
 def get_constituents(element: Element, typing, *args, **kwargs):
     left = eval_term(element[0], *args, **kwargs)
     if not isinstance(left, typing):
@@ -69,7 +73,9 @@ def __eval_successor(element: Element, model, *args, **kwargs) -> str:
 
     color = eval_term(element[0], model=model, *args, **kwargs)
     color_type = model.find_color_type(color)
-    if color_type.pnml_type != 'cyclicenumeration':
+    global didReportSucc
+    if color_type.pnml_type != 'cyclicenumeration' and not didReportSucc:
+        didReportSucc = True
         sys.stderr.write('Using successor on a {0} color. Only cyclic enumerations has successors'.format(color_type.pnml_type))
 
     return next_key(color_type.constants, color)
@@ -83,7 +89,9 @@ def __eval_predecessor(element: Element, model, *args, **kwargs) -> str:
 
     color = eval_term(element[0], model=model, *args, **kwargs)
     color_type = model.find_color_type(color)
-    if color_type.pnml_type != 'cyclicenumeration':
+    global didReportPred
+    if color_type.pnml_type != 'cyclicenumeration' and not didReportPred:
+        didReportPred = True
         sys.stderr.write('Using predecessor on a {0} color. Only cyclic enumerations has predecessors.'.format(color_type.pnml_type))
 
     return prev_key(color_type.constants, color)
@@ -161,14 +169,16 @@ def __eval_add(element: Element, *args, **kwargs) -> Multiset:
 def __eval_subtract(element: Element, *args, **kwargs) -> Multiset:
     if get_tag(element) != 'subtract':
         raise Exception('Element is not a subtract operator!')
-    left = eval_term(element[0], *args, **kwargs)
-    if not isinstance(left, Multiset):
-        raise Exception('Left constituent of subtract must be a multiset!')
-    right = eval_term(element[1], *args, **kwargs)
-    if not isinstance(right, Multiset):
-        raise Exception('Right constituent of subtract must be a multiset!')
+    ms = eval_term(element[0], *args, **kwargs)
+    if not isinstance(ms, Multiset):
+        raise Exception('First constituent of subtract must be a multiset!')
+    for idx, subterm in enumerate(element[1:]):
+        constituent = eval_term(subterm, *args, **kwargs)
+        if not isinstance(constituent, Multiset):
+            raise Exception('Constituent {0} of subtract must be a multiset!'.format(idx+1))
+        ms.difference_update(constituent)
 
-    return left.difference(right)
+    return ms
 
 
 def __eval_scalar_product(element: Element, *args, **kwargs) -> Multiset:

@@ -31,15 +31,18 @@ def print_help():
 
 def run():
     cpn = CPNModel(sys.argv[len(sys.argv) - 1])
+    cpn_size = 0
 
     if is_verbose:
         cpn_places = len(cpn.places.keys())
         cpn_transitions = len(cpn.transitions.keys())
+        cpn_arcs = len(cpn.arcs.keys())
         cpn_size = cpn_places + cpn_transitions
 
         print("Net id: ", cpn.name)
         print("Number of places in CPN: ", cpn_places)
         print("Number of transitions in CPN: ", cpn_transitions)
+        print("Number of arcs in CPN: ", cpn_arcs)
         print("Size in total (places+transitions): ", cpn_size)
         print("")
 
@@ -50,10 +53,12 @@ def run():
 
         pt_places = len(pt.places.keys())
         pt_transitions = len(pt.transitions.keys())
+        pt_arcs = len(pt.arcs.keys())
         pt_size = pt_places + pt_transitions
 
         print("Number of places in PT: ", pt_places)
         print("Number of transitions in PT: ", pt_transitions)
+        print("Number of arcs in PT: ", pt_arcs)
         print("Size in total (places+transitions): ", pt_size)
         print("")
         print("Size ratio: ", pt_size / cpn_size)
